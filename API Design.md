@@ -1,10 +1,10 @@
 Table of Contents
 
--   [GET /api/test_types/](#get-apitest_types)
--   [POST /api/tests/](#post-apitests)
+-   [GET /api/test_types](#get-apitest_types)
+-   [POST /api/tests](#post-apitests)
 -   [PUT /api/tests/{test_id}](#put-apiteststest_id)
 
-## GET /api/test_types/
+## GET /api/test_types
 
 Called when first load the page.
 
@@ -25,7 +25,7 @@ Status: 200 OK
 }
 ```
 
-## POST /api/tests/
+## POST /api/tests
 
 Called when user start taking a test (click on a test in the test list).
 
@@ -139,6 +139,7 @@ Status: 400 Bad Request
 
 ```json
 Status: 404 Not Found
+
 {
     "error": "test_question_id does not exist"
 }
