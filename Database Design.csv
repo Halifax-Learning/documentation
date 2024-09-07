@@ -1,0 +1,69 @@
+,Field,Type,Default Value,Nullable,Foreign Key,Description
+,,,,,,
+QuestionType,question_type_id,INT,,,,Primary Key
+,name,VARCHAR(100),,,,"Name of the question type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
+,instruction_text,VARCHAR(255),,,,"Instructions for the question type. E.g.: I'll say two sounds, you tell me the word, like this: ""/m/ /oo/"" - ""moo""."
+,instruction_audio_filepath,VARCHAR(255),,Yes,,"Filepath to instruction audio file recorded by teacher. E.g.: questions/analysis/instruction_synthesis.mp3 (""instruction_"" + question name)"
+,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,
+,,,,,,
+,,,,,,
+Question,question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
+,question_text,VARCHAR(255),,,,Question text. E.g.: /k/ /aw/
+,question_audio_filepath,VARCHAR(255),,Yes,,"Filepath to question audio file recorded by teacher. E.g: questions/analysis/question_k_aw.mp3 (""question_"" + question text)"
+,correct_answer_text,VARCHAR(255),,Yes,,
+,correct_answer_audio_filepath,VARCHAR(255),,Yes,,"Filepath to correct answer audio file recorded by teacher. E.g.: questions/analysis/correct_answer_k_aw.mp3 (""correct_answer_"" + question text)"
+,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,
+,,,,,,
+Account,account_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,account_role,VARCHAR(50),,,,"Account role (e.g., student, teacher)"
+,first_name,VARCHAR(100),,,,First name
+,last_name,VARCHAR(100),,,,Last name
+,email,VARCHAR(100),,,,Email address
+,username,VARCHAR(100),,,,Username
+,hashed_password,VARCHAR(255),,,,One way encoded password
+,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,
+,,,,,,
+TestType,test_type_id,INT,,,,Primary Key
+,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
+,name,VARCHAR(100),,,,"Name of the test type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
+,num_questions,INT,,,,Number of questions in the test
+,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,
+,,,,,,
+Test,test_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
+,test_taker_id,CHAR(32),,Yes,N:1; Account(account_id),Foreign key referencing the test taker's account (optional)
+,test_taker_name,VARCHAR(100),,Yes,,"Test taker's name. In case a test taker does not have an account, the database will store their name and email instead"
+,test_taker_email,VARCHAR(100),,Yes,,Test taker's email.
+,submission_time,DATETIME,,Yes,,Date and time of the test submission
+,no_correct_answers,INT,,Yes,,Number of correct answers
+,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,
+,,,,,,
+TestQuestion,test_question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,test_id,CHAR(32),,,N:1; Test(test_id),Foreign key referencing test
+,question_id,CHAR(32),,,"N:1, Question(question_id)",Foreign key referencing question
+,answer_text,VARCHAR(255),,Yes,,Answer in text (if the question requires)
+,answer_audio_filepath,VARCHAR(100),,Yes,,Filepath to answer audio file recorded by test taker. E.g.: tests/<yyyy-mm-dd>/test_<test_id>/answer_<test_question_id>.mp3
+,human_evaluation,BOOLEAN,,Yes,,"Correctness of the answer: true (correct), false (incorrect), null (not yet evaluated)"
+,human_evaluator_id,CHAR(32),,Yes,N:1; Account(account_id),Foreign key referencing human evaluator (optional)
+,machine_evaluation,FLOAT,,Yes,,"Confidence level that the answer is correct, range from 0 - 100. Higher value means higher confidence."
+,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,
+,,,,,,
