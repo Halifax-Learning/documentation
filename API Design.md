@@ -16,10 +16,10 @@ Status: 200 OK
 {
     "test_types": [
         {
-            "test_type_id": "test_type_id",
-            "question_type_id": "question_type_id",
-            "name": "test_type_name",
-            "num_questions": "num_questions"
+            "test_type_id": 1,
+            "question_type_id": 1,
+            "name": "Synthesis",
+            "num_questions": 20,
         }
     ]
 }
@@ -33,8 +33,8 @@ Called when user start taking a test (click on a test in the test list).
 
 ```json
 {
-    "test_type_id": "test_type_id (integer)",
-    "account_id": "account_id (UUID)"
+    "test_type_id": "1",
+    "test_taker_id": "58973104203211ea8817bc2411ffed9d"
 }
 ```
 
@@ -49,22 +49,26 @@ In the final app, the `account_id` will be the logged in user's account id. For 
 Status: 201 Created
 
 {
-    "test_id": "test_id",
-    "test_type_id": "test_type_id",
-    "test_taker_id": "account_id",
-    "instruction_text": "instruction_text",
-    "instruction_audio": "instruction_audio_file_b64_encode",
+    "test_id": "uuid (no hyphens)",
+    "test_type": {
+        "test_type_id": 1,
+        "name": "Synthesis",
+        "num_questions": 20,
+    },
+    "test_taker_id": "58973104203211ea8817bc2411ffed9d",
+    "instruction_text": "I'll say two sounds, you tell me the word.",
+    "instruction_audio_b64_encode": "string",
     "test_questions": [
         {
-            "test_question_id": "test_question_id",
+            "test_question_id": "uuid (no hyphens)",
             "question": {
-                "question_id": "question_id",
+                "question_id": "uuid (no hyphens)",
                 "question_type": {
-                    "question_type_id": "question_type_id",
-                    "name": "question_type_name"
+                    "question_type_id": 1,
+                    "name": "Synthesis",
                 },
-                "question_text": "question_text",
-                "question_audio": "question_audio_file_b64_encode"
+                "question_text": "/k/ /aw/",
+                "question_audio_b64_encode": "string"
             }
         }
     ]
@@ -95,7 +99,7 @@ Status: 404 Not Found
 }
 ```
 
-## PUT /api/tests/{test_id}
+## PUT /api/tests/{test_id:uuid}
 
 Called when user submit a test.
 
@@ -107,9 +111,9 @@ In the final app, authenication (e.g.: token) will be required to make this requ
 {
     "test_questions": [
         {
-            "test_question_id": "test_question_id",
-            "answer_text": "answer_text",
-            "answer_audio": "answer_audio_file_b64_encode"
+            "test_question_id": "uuid (no hyphens)",
+            "answer_text": "string",
+            "answer_audio_b64_encode": "string"
         }
     ]
 }
