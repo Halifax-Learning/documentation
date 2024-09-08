@@ -2,7 +2,7 @@ Table of Contents
 
 -   [GET /api/test_types](#get-apitest_types)
 -   [POST /api/tests](#post-apitests)
--   [PUT /api/tests/{test_id}](#put-apiteststest_id)
+-   [PUT /api/tests/{test_id:uuid}](#put-api-tests-test_id-uuid)
 
 ## GET /api/test_types
 
@@ -99,7 +99,12 @@ Status: 404 Not Found
 }
 ```
 
-## PUT /api/tests/{test_id:uuid}
+## PUT /api/tests/{test_id:uuid}<a id="put-api-tests-test_id-uuid"></a>
+
+**Note**:
+
+-   Maybe we want both teacher when grading a test and student when submitting a test to use this API.
+-   For student, we should only allow this API to be called once per test.
 
 Called when user submit a test.
 
