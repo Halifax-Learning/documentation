@@ -262,7 +262,7 @@ INSERT INTO Question(question_id, question_type_id, question_text, question_audi
     (444, 4, "er", NULL, "questions/single_phoneme_recognition/correct_answer_single_phoneme_recognition_er.mp3");
 
 INSERT INTO AssessmentType(assessment_type_id, assessment_type_name) VALUES
-    (1, 'Phonological Skills Assessmen');
+    (1, 'Phonological Skills Assessment');
 
 INSERT INTO TestType(test_type_id, question_type_id, test_type_name, num_questions) VALUES
     (1, 1, 'Synthesis', 5),

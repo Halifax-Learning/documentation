@@ -49,20 +49,24 @@ Status: 200 OK
 
 {
     "assessment_id": "uuid (no hyphens)",
+    "assessment_type": {
+        "assessment_type_id": 1,
+        "assessment_name": "Phonological Skills Assessment"
+    },
     "test_types": [
         {
             "test_type_id": 1,
             "question_type_id": 1,
-            "name": "Synthesis",
+            "question_type_name": "Synthesis",
             "num_questions": 20,
             "question_instruction_text": "I'll say two sounds, you tell me the word, like this: \"/m/ /oo/\" - \"moo\"."
         },
         {
             "test_type_id": 2,
             "question_type_id": 2,
-            "name": "Analysis",
+            "question_type_name": "Analysis",
             "num_questions": 20,
-            "I'll say a syllable, and you tell me the three sounds you hear, like this: \"boot\" - \"/b/ /oo/ /t/\"."
+            "question_instruction_text": "I'll say a syllable, and you tell me the three sounds you hear, like this: \"boot\" - \"/b/ /oo/ /t/\"."
         }
     ]
 }
