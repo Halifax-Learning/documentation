@@ -1,69 +1,163 @@
-,Field,Type,Default Value,Nullable,Foreign Key,Description
-,,,,,,
-QuestionType,question_type_id,INT,,,,Primary Key
-,name,VARCHAR(100),,,,"Name of the question type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
-,instruction_text,VARCHAR(255),,,,"Instructions for the question type. E.g.: I'll say two sounds, you tell me the word, like this: ""/m/ /oo/"" - ""moo""."
-,instruction_audio_filepath,VARCHAR(255),,Yes,,"Filepath to instruction audio file recorded by teacher. E.g.: questions/analysis/instruction_synthesis.mp3 (""instruction_"" + question name)"
-,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
-,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
-,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
-,,,,,,
-,,,,,,
-,,,,,,
-Question,question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
-,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
-,question_text,VARCHAR(255),,,,Question text. E.g.: /k/ /aw/
-,question_audio_filepath,VARCHAR(255),,Yes,,"Filepath to question audio file recorded by teacher. E.g: questions/analysis/question_k_aw.mp3 (""question_"" + question text)"
-,correct_answer_text,VARCHAR(255),,Yes,,
-,correct_answer_audio_filepath,VARCHAR(255),,Yes,,"Filepath to correct answer audio file recorded by teacher. E.g.: questions/analysis/correct_answer_k_aw.mp3 (""correct_answer_"" + question text)"
-,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
-,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
-,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
-,,,,,,
-,,,,,,
-Account,account_id,CHAR(32),,,,Primary Key (UUID without hyphens)
-,account_role,VARCHAR(50),,,,"Account role (e.g., student, teacher)"
-,first_name,VARCHAR(100),,,,First name
-,last_name,VARCHAR(100),,,,Last name
-,email,VARCHAR(100),,,,Email address
-,username,VARCHAR(100),,,,Username
-,hashed_password,VARCHAR(255),,,,One way encoded password
-,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
-,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
-,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
-,,,,,,
-,,,,,,
-TestType,test_type_id,INT,,,,Primary Key
-,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
-,name,VARCHAR(100),,,,"Name of the test type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
-,num_questions,INT,,,,Number of questions in the test
-,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
-,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
-,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
-,,,,,,
-,,,,,,
-Test,test_id,CHAR(32),,,,Primary Key (UUID without hyphens)
-,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
-,test_taker_id,CHAR(32),,Yes,N:1; Account(account_id),Foreign key referencing the test taker's account (optional)
-,test_taker_name,VARCHAR(100),,Yes,,"Test taker's name. In case a test taker does not have an account, the database will store their name and email instead"
-,test_taker_email,VARCHAR(100),,Yes,,Test taker's email.
-,submission_time,DATETIME,,Yes,,Date and time of the test submission
-,no_correct_answers,INT,,Yes,,Number of correct answers
-,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
-,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
-,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
-,,,,,,
-,,,,,,
-TestQuestion,test_question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
-,test_id,CHAR(32),,,N:1; Test(test_id),Foreign key referencing test
-,question_id,CHAR(32),,,"N:1, Question(question_id)",Foreign key referencing question
-,answer_text,VARCHAR(255),,Yes,,Answer in text (if the question requires)
-,answer_audio_filepath,VARCHAR(100),,Yes,,Filepath to answer audio file recorded by test taker. E.g.: tests/<yyyy-mm-dd>/test_<test_id>/answer_<test_question_id>.mp3
-,human_evaluation,BOOLEAN,,Yes,,"Correctness of the answer: true (correct), false (incorrect), null (not yet evaluated)"
-,human_evaluator_id,CHAR(32),,Yes,N:1; Account(account_id),Foreign key referencing human evaluator (optional)
-,machine_evaluation,FLOAT,,Yes,,"Confidence level that the answer is correct, range from 0 - 100. Higher value means higher confidence."
-,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
-,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
-,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
-,,,,,,
-,,,,,,
+Table,Table Description,Field,Type,Default Value,Nullable,Foreign Key,Description
+,,,,,,,
+Account,Holds info of registered users (teachers and test takers),account_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,account_role,VARCHAR(50),,,,"Account role (e.g., student, teacher)"
+,,first_name,VARCHAR(100),,,,First name
+,,last_name,VARCHAR(100),,,,Last name
+,,email,VARCHAR(100),,,,Email address
+,,username,VARCHAR(100),,,,Username
+,,hashed_password,VARCHAR(255),,,,One way encoded password
+,,current_entrolled_course,VARCHAR(255),,Yes,,"The current course of the student at HLC. May create a new table Course later to hold more information if needed. For now, use this field to group into courses."
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Additional Account Information,"Hold additional information of registered users (mostly students).
+This table is not needed right now, but maybe will be needed in the future.",additional_account_info_id,CHAR(32),,,,
+,,account_id,CHAR(32),,,1:1; Account(account_id),Foreign Key referencing account
+,,address,VARCHAR(255),,Yes,,
+,,phone,CHAR(100),,Yes,,
+,,date_of_birth,DATETIME,,Yes,,
+,,school,VARCHAR(100),,Yes,,
+,,grade,VARCHAR(100),,Yes,,
+,,parent_name,VARCHAR(100),,Yes,,
+,,parent_phone,VARCHAR(100),,Yes,,
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+,,,,,,,
+Question Type,"Represents question types. There are 4 question types at the moment: synthesis, analysis, listening, single phoneme recognition.",question_type_id,INT,,,,Primary Key
+,,question_type_name,VARCHAR(100),,,,"Name of the question type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
+,,question_instruction_text,VARCHAR(255),,,,"Instructions for the question type. E.g.: I'll say two sounds, you tell me the word, like this: ""/m/ /oo/"" - ""moo""."
+,,instruction_audio_filepath,VARCHAR(255),,Yes,,"Filepath to instruction audio file recorded by teacher. E.g.: questions/analysis/instruction_synthesis.mp3 (""instruction_"" + question name)"
+,,instruction_video_filepath,VARCHAR(255),,Yes,,Filepath to instruction video file. Not needed for now but maybe in the future.
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+,,,,,,,
+Question,Represents the actual questions.,question_id,INT,,,,Primary Key
+,,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
+,,question_text,VARCHAR(255),,,,Question text. E.g.: /k/ /aw/
+,,question_audio_filepath,VARCHAR(255),,Yes,,"Filepath to question audio file recorded by teacher. E.g: questions/synthesis/question_synthesis_k_aw.mp3 (""question_"" + question name + question text)"
+,,correct_answer_text,VARCHAR(255),,Yes,,
+,,correct_answer_audio_filepath,VARCHAR(255),,Yes,,"Filepath to correct answer audio file recorded by teacher. E.g.: questions/synthesis/correct_answer_synthesis_k_aw.mp3 (""correct_answer_"" + question name + question text)"
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+,,,,,,,
+Assessment Type,"Represents assessment types. An assessment type can comprise of one or multiple test types. Right now, there is only one assessment type containing all 4 available test types.",assessment_type_id,INT,,,,Primary Key
+,,assessment_type_name,VARCHAR(255),,,,"E.g.: ""Phonological Skills Assessment"""
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Assessment,Each record represents an actual assessment taken by a student.,assessment_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,assessment_type_id,INT,,,"N:1, AssessmentType(assessment_type_id)",Foreign key referencing assessment type
+,,test_taker_id,CHAR(32),,,N:1; Account(account_id),Foreign key referencing the test taker's account
+,,submission_time,DATETIME,,Yes,,The submission time of the last test in the assessment
+,,test_taker_name,VARCHAR(100),,Yes,,"Test taker's name. In case a test taker does not have an account, the database will store their name and email instead. Since at the moment, we do require test_taker_id, this field is not neccessary."
+,,test_taker_email,VARCHAR(100),,Yes,,Test taker's email.
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Test Type,"Represents test types. A test consists of all questions in the DB of the same quest type (at the moment). There are 4 test types at the moment: synthesis, analysis, listening, single phoneme recognition (same names as question types)",test_type_id,INT,,,,Primary Key
+,,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
+,,test_type_name,VARCHAR(100),,,,"Name of the test type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
+,,num_questions,INT,,,,"Number of questions in the test. If number of questions = 0, the test type will contain all questions of the same type in the DB."
+,,test_instruction_text,VARCHAR(255),,,,???
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Test,"Each record represents an actual test (e.g: synthesis, analysis,...) within an assessment taken by a student.",test_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
+,,assessment_id,CHAR(32),,Yes,N:1; Assessment(assessment_id),Foreign key referencing the assessment as a test belongs to an assessment.
+,,submission_time,DATETIME,,Yes,,Date and time of the test submission
+,,num_correct_answers,INT,,Yes,,Number of correct answers
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+,,,,,,,
+Assessment Type Test Type Mapping,"Maps the relationship between assessment types and test types. E.g.: The ""Phonological Skills Assessment"" assessment type contains 4 test types: synthesis, analysis, listening, single phoneme recognition.",assessment_type_id,INT,,,"N:1, AssessmentType(assessment_type_id)",Foreign key referencing assessment type
+,,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Test Question,Each record represent an actual question in a test within an assessment taken by a student.,test_question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,test_id,CHAR(32),,,N:1; Test(test_id),Foreign key referencing test
+,,question_id,INT,,,N:1; Question(question_id),Foreign key referencing question
+,,question_ordinal,INT,,,,"The position of the question in the test, starting from 1."
+,,answer_text,VARCHAR(255),,Yes,,Answer in text (if the question requires)
+,,answer_audio_filepath,VARCHAR(255),,Yes,,Filepath to answer audio file recorded by test taker. E.g.: tests/<yyyy-mm-dd>/assessment_<assessment_id>/test_<test_id>/answer_<test_question_id>.mp3
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Auto Grading History,Each record repserents an evaluation of an machine learning of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times.,auto_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,test_question_id,CHAR(32),,,N:1; TestQuestion(test_question_id),Foreign key referencing test question
+,,model_name,VARCHAR(255),,Yes,,Name of the machine model. Might be useful when we use different machine learning models.
+,,auto_evaluation,FLOAT,,,,"Confidence level that the answer is correct, range from 0 - 100. Higher value means higher confidence."
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Teacher Grading History,Each record repserents an evaluation of a teacher of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times.,teacher_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,test_question_id,CHAR(32),,,N:1; Question(question_id),Foreign key referencing test question
+,,teacher_account_id,CHAR(32),,,N:1; Account(account_id),Foreign key referencing teacher account
+,,teacher_evaluation,BOOLEAN,,,,"Correctness of the answer: true (correct), false (incorrect)"
+,,teacher_comment,VARCHAR(255),,Yes,,Additional comment by teacher
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+Design Explanation,Why don't we just combine QuestionType and TestType table into one table?,"Right now, there is an exact one-to-one relationship between table, so technically they can be combined into one. However, maybe in the future, there might be more than one test type that references a same question type, for example, Synthesis Short (10 questions) and Synthesis Long (20 questions) both refers to Synthesis question type.",,,,,
+,Do we really need table AssessmentType?,"Right now there is only one assessment type, which we call ""Phonological Skills Assessment"", and which contains all 4 available test types. However, in the future, there might be more assessement types, such as an assessment containing only synthesis and analysis tests. So having this table now allows us more flexibility to extend if necessary.",,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
+,,,,,,,
