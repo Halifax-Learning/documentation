@@ -1,12 +1,13 @@
 Table of Contents
 
--   [GET /api/test_types](#get-apitest_types)
+-   [GET /api/assessment_types](#get-apiassessment_types)
+-   [POST /api/assessments](#post-apiassessments)
 -   [POST /api/tests](#post-apitests)
 -   [PUT /api/tests/{test_id:uuid}](#put-api-tests-test_id-uuid)
 
-## GET /api/test_types
+## GET /api/assessment_types
 
-Called when first load the page.
+Called when the web app is first loaded. Will return a list of assessment types that the user can take. Technically, there is only one type of assessment in the database right now.
 
 ### Response
 
@@ -14,34 +15,87 @@ Called when first load the page.
 Status: 200 OK
 
 {
-    "test_types": [
+    "assessment_types": [
         {
-            "test_type_id": 1,
-            "question_type_id": 1,
-            "name": "Synthesis",
-            "num_questions": 20,
+            "assessment_type_id": 1,
+            "assessment_name": "Phonological Skills Assessment"
         }
     ]
 }
 ```
 
-## POST /api/tests
+## POST /api/assessments
 
-Called when user start taking a test (click on a test in the test list).
+Called when a student starts an assessment (aka a group of tests). Will create a `Assessment` record in the database and return a list of test types associated with the test group type.
 
 ### Request
 
 ```json
 {
-    "test_type_id": "1",
+    "assessment_type_id": 1,
     "test_taker_id": "58973104203211ea8817bc2411ffed9d"
 }
 ```
 
 In the final app, the `account_id` will be the logged in user's account id. For now:
 
--   if the `account_id` actually exists in the database, the test will be created for that account.
--   if the `account_id` does not exist in the database, the test will be created for the first student account.
+-   if the `account_id` actually exists in the database, a `TestGroup` record will be created for that account.
+-   if the `account_id` does not exist in the database, a `TestGroup` record will be created for the first student account in the database.
+
+### Response
+
+```json
+Status: 200 OK
+
+{
+    "assessment_id": "uuid (no hyphens)",
+    "test_types": [
+        {
+            "test_type_id": 1,
+            "question_type_id": 1,
+            "name": "Synthesis",
+            "num_questions": 20,
+            "question_instruction_text": "I'll say two sounds, you tell me the word, like this: \"/m/ /oo/\" - \"moo\"."
+        },
+        {
+            "test_type_id": 2,
+            "question_type_id": 2,
+            "name": "Analysis",
+            "num_questions": 20,
+            "I'll say a syllable, and you tell me the three sounds you hear, like this: \"boot\" - \"/b/ /oo/ /t/\"."
+        }
+    ]
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "assessment_type_id is required"
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "assessment_type_id does not exist"
+}
+```
+
+## POST /api/tests
+
+Called when user starts taking a test in a test group. Will create a `Test` record and associated `TestQuestion` records in the database.
+
+### Request
+
+```json
+{
+    "assessment_id": "uuid",
+    "test_type_id": 1
+}
+```
 
 ### Response
 
@@ -53,23 +107,24 @@ Status: 201 Created
     "test_type": {
         "test_type_id": 1,
         "name": "Synthesis",
-        "num_questions": 20,
+        "num_questions": 20
     },
-    "test_taker_id": "58973104203211ea8817bc2411ffed9d",
-    "instruction_text": "I'll say two sounds, you tell me the word.",
+    "assessment_id": "uuid (no hyphens)",
+    "question_instruction_text": "I'll say two sounds, you tell me the word.",
     "instruction_audio_b64_encode": "string",
     "test_questions": [
         {
             "test_question_id": "uuid (no hyphens)",
             "question": {
-                "question_id": "uuid (no hyphens)",
+                "question_id": 101,
                 "question_type": {
                     "question_type_id": 1,
-                    "name": "Synthesis",
+                    "question_type_name": "Synthesis"
                 },
                 "question_text": "/k/ /aw/",
                 "question_audio_b64_encode": "string"
-            }
+            },
+            "question_ordinal": 1
         }
     ]
 }
@@ -79,7 +134,15 @@ Status: 201 Created
 Status: 400 Bad Request
 
 {
-    "error": "account_id is required"
+    "error": "assessment_id is required"
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "assessment_id does not exist"
 }
 ```
 
@@ -96,6 +159,14 @@ Status: 404 Not Found
 
 {
     "error": "test_type_id does not exist"
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "test already exists"
 }
 ```
 
@@ -116,9 +187,9 @@ In the final app, authenication (e.g.: token) will be required to make this requ
 {
     "test_questions": [
         {
-            "test_question_id": "uuid (no hyphens)",
+            "test_question_id": "uuid",
             "answer_text": "string",
-            "answer_audio_b64_encode": "string"
+            "answer_audio_b64_encode": "UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA"
         }
     ]
 }
@@ -142,6 +213,14 @@ Status: 404 Not Found
 Status: 400 Bad Request
 
 {
+    "error": "test has already been submitted"
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
     "error": "test_question_id is required"
 }
 ```
@@ -151,13 +230,5 @@ Status: 404 Not Found
 
 {
     "error": "test_question_id does not exist"
-}
-```
-
-```json
-Status: 400 Bad Request
-
-{
-    "error": "answer_text or answer_audio is required"
 }
 ```
