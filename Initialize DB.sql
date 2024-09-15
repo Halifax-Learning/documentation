@@ -8,8 +8,8 @@ CREATE TABLE Account (
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    username VARCHAR(100) NOT NULL UNIQUE,
     hashed_password VARCHAR(255) NOT NULL,
+    is_activated BOOLEAN DEFAULT FALSE NOT NULL,
     current_enrolled_course VARCHAR(255),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -133,9 +133,9 @@ CREATE TABLE TeacherGradingHistory (
 );
 
 
-INSERT INTO Account(account_id, account_role, first_name, last_name, email, username, hashed_password, current_enrolled_course) VALUES
-    ('58973104203211ea8817bc2411ffed9d', 'student', 'Student', '1', 'student.1@gmail.com', 'student1', 'password1', 'Course 1'),
-    ('7f8d6872203211ea8817bc2411ffed9d', 'teacher', 'Teacher', '1', 'teacher.1@gmail.com', 'teacher1', 'password1', NULL);
+INSERT INTO Account(account_id, account_role, first_name, last_name, email, hashed_password, current_enrolled_course) VALUES
+    ('58973104203211ea8817bc2411ffed9d', 'student', 'John', 'Smith', 'student.1@gmail.com', '$2b$12$EigZJUvqsM5lVzgjVOdjP.SzYJZfRuDOiU4OTBHBM0Qi6aKxZZssq', 'Course 1'),
+    ('7f8d6872203211ea8817bc2411ffed9d', 'teacher', 'Jane', 'Smith', 'teacher.1@gmail.com', '$2b$12$eRis9ZXp/omoi.HWp7Abc.8TFYfV1pPYGDQ/yoTWoeEandNKR0BMe', NULL);
 
 INSERT INTO QuestionType (question_type_id, question_type_name, question_instruction_text, instruction_audio_filepath) VALUES
     (1, 'Synthesis', 'I''ll say two sounds, you tell me the word, like this: "/m/ /oo/" - "moo".', 'questions/synthesis/instruction_synthesis.mp3'),

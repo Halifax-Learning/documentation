@@ -64,6 +64,7 @@ Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/Halifax
 -   **Python**
 -   **Django, Django Rest Framework**
 -   **mysqlclient**
+-   **bcrypt**: for hashing and verifying password
 
 #### Useful tools for backend
 

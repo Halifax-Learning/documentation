@@ -4,9 +4,10 @@ Account,Holds info of registered users (teachers and test takers),account_id,CHA
 ,,account_role,VARCHAR(50),,,,"Account role (e.g., student, teacher)"
 ,,first_name,VARCHAR(100),,,,First name
 ,,last_name,VARCHAR(100),,,,Last name
-,,email,VARCHAR(100),,,,Email address
+,,email,VARCHAR(100),,,,"Email address, also used as username"
 ,,username,VARCHAR(100),,,,Username
 ,,hashed_password,VARCHAR(255),,,,One way encoded password
+,,is_activated,BOOLEAN,FALSE,,,Whether the account is activated yet (currently have no effect)
 ,,current_entrolled_course,VARCHAR(255),,Yes,,"The current course of the student at HLC. May create a new table Course later to hold more information if needed. For now, use this field to group into courses."
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
