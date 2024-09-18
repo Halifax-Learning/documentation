@@ -3,11 +3,12 @@
 -   [User APIs](#user-apis)
     -   [POST /api/register](#post-apiregister)
     -   [POST /api/login](#post-apilogin)
--   [Taking an Assessment APIs](#taking-an-assessment-apis)
+-   [Assessment APIs](#assessment-apis)
     -   [GET /api/assessment_types](#get-apiassessment_types)
     -   [POST /api/assessments](#post-apiassessments)
-    -   [POST /api/tests](#post-apitests)
-    -   [PUT /api/tests/{test_id:uuid}](#put-api-tests-test_id-uuid)
+    -   [PUT /api/test_questions/{test_question_id}](#put-apitest_questionstest_question_id)
+-   [Audio APIs](#audio-apis)
+    -   [GET /api/audio/?audio_type=question&question_id=1](#get-apiaudioaudio_typequestionquestion_id1)
 
 # User APIs
 
@@ -17,7 +18,7 @@ Called when a user registers for an account. Will create an `Account` record in 
 
 Only create Student accounts for now. In the final app, we may only allow teacher accounts to be created by invitation links.
 
-Response only includes user information without password. In the final app, we may want to return a token for the user to use for authentication (same for login).
+Response only includes user information without password. In the final app, we may want to return a token for the user to use for authentication (same for login). Token will also contain the user's role.
 
 ### Request
 
@@ -117,6 +118,8 @@ Status: 401 Unauthorized
 }
 ```
 
+# Assessment APIs
+
 ## GET /api/assessment_types
 
 Called when the web app is first loaded. Will return a list of assessment types that the user can take. Technically, there is only one type of assessment in the database right now.
@@ -136,11 +139,9 @@ Status: 200 OK
 }
 ```
 
-# Taking an Assessment APIs
-
 ## POST /api/assessments
 
-Called when a student starts an assessment (aka a group of tests). Will create a `Assessment` record in the database and return a list of test types associated with the test group type.
+Called when a student starts an assessment (aka a group of tests). Will create a `Assessment` record and associated `Test` records and `TestQuestion` records in the database.
 
 ### Request
 
@@ -151,10 +152,7 @@ Called when a student starts an assessment (aka a group of tests). Will create a
 }
 ```
 
-In the final app, the `account_id` will be the logged in user's account id. For now:
-
--   if the `account_id` actually exists in the database, a `TestGroup` record will be created for that account.
--   if the `account_id` does not exist in the database, a `TestGroup` record will be created for the first student account in the database.
+In the final app, a token will be sent in the header to authenticate the user. For now we use the `test_taker_id` in the request body to identify the user.
 
 ### Response
 
@@ -167,20 +165,77 @@ Status: 200 OK
         "assessment_type_id": 1,
         "assessment_name": "Phonological Skills Assessment"
     },
-    "test_types": [
+    "tests": [
         {
-            "test_type_id": 1,
-            "question_type_id": 1,
-            "question_type_name": "Synthesis",
-            "num_questions": 20,
-            "question_instruction_text": "I'll say two sounds, you tell me the word, like this: \"/m/ /oo/\" - \"moo\"."
+            "test_id": "uuid",
+            "test_type": {
+                "test_type_id": 1,
+                "question_type": {
+                    "question_type_id": 1,
+                    "question_type_name": "Synthesis",
+                    "question_instruction_text": "I'll say two sounds, you tell me the word."
+                },
+                "test_type_name": "Synthesis",
+                "num_questions": 20,
+                "has_question_audio": true
+            },
+            "test_ordinal": 1,
+            "is_last_test": false,
+            "test_questions": [
+                {
+                    "test_question_id": "uuid",
+                    "question": {
+                        "question_id": 101,
+                        "question_text": "/k/ /aw/",
+                    },
+                    "question_ordinal": 1,
+                    "is_last_question": false
+                },
+                {
+                    "test_question_id": "uuid",
+                    "question": {
+                        "question_id": 102,
+                        "question_text": "/t/ /o_e/",
+                    },
+                    "question_ordinal": 2,
+                    "is_last_question": true
+                }
+            ]
         },
         {
-            "test_type_id": 2,
-            "question_type_id": 2,
-            "question_type_name": "Analysis",
-            "num_questions": 20,
-            "question_instruction_text": "I'll say a syllable, and you tell me the three sounds you hear, like this: \"boot\" - \"/b/ /oo/ /t/\"."
+            "test_id": "uuid",
+            "test_type": {
+                "test_type_id": 2,
+                "question_type": {
+                    "question_type_id": 2,
+                    "question_type_name": "Analysis",
+                    "question_instruction_text": "I'll say a word, you tell me the sounds."
+                },
+                "test_type_name": "Analysis",
+                "num_questions": 20
+            },
+            "test_ordinal": 2,
+            "is_last_test": true,
+            "test_questions": [
+                {
+                    "test_question_id": "uuid",
+                    "question": {
+                        "question_id": 201,
+                        "question_text": "cat",
+                    },
+                    "question_ordinal": 1,
+                    "is_last_question": false
+                },
+                {
+                    "test_question_id": "uuid",
+                    "question": {
+                        "question_id": 202,
+                        "question_text": "dog",
+                    },
+                    "question_ordinal": 2,
+                    "is_last_question": true
+                }
+            ]
         }
     ]
 }
@@ -202,57 +257,11 @@ Status: 404 Not Found
 }
 ```
 
-## POST /api/tests
-
-Called when user starts taking a test in a test group. Will create a `Test` record and associated `TestQuestion` records in the database.
-
-### Request
-
-```json
-{
-    "assessment_id": "uuid",
-    "test_type_id": 1
-}
-```
-
-### Response
-
-```json
-Status: 201 Created
-
-{
-    "test_id": "uuid",
-    "test_type": {
-        "test_type_id": 1,
-        "name": "Synthesis",
-        "num_questions": 20
-    },
-    "assessment_id": "uuid",
-    "question_instruction_text": "I'll say two sounds, you tell me the word.",
-    "instruction_audio_b64_encode": "string",
-    "test_questions": [
-        {
-            "test_question_id": "uuid",
-            "question": {
-                "question_id": 101,
-                "question_type": {
-                    "question_type_id": 1,
-                    "question_type_name": "Synthesis"
-                },
-                "question_text": "/k/ /aw/",
-                "question_audio_b64_encode": "string"
-            },
-            "question_ordinal": 1
-        }
-    ]
-}
-```
-
 ```json
 Status: 400 Bad Request
 
 {
-    "error": "assessment_id is required"
+    "error": "test_taker_id is required"
 }
 ```
 
@@ -260,56 +269,20 @@ Status: 400 Bad Request
 Status: 404 Not Found
 
 {
-    "error": "assessment_id does not exist"
+    "error": "test_taker_id does not exist"
 }
 ```
 
-```json
-Status: 400 Bad Request
+## PUT /api/test_questions/{test_question_id}
 
-{
-    "error": "test_type_id is required"
-}
-```
-
-```json
-Status: 404 Not Found
-
-{
-    "error": "test_type_id does not exist"
-}
-```
-
-```json
-Status: 400 Bad Request
-
-{
-    "error": "test already exists"
-}
-```
-
-## PUT /api/tests/{test_id:uuid}<a id="put-api-tests-test_id-uuid"></a>
-
-**Note**:
-
--   Maybe we want both teacher when grading a test and student when submitting a test to use this API.
--   For student, we should only allow this API to be called once per test.
-
-Called when user submit a test.
-
-In the final app, authenication (e.g.: token) will be required to make this request.
+Called when a student click "Next" button to go to the next question, then the answer to the current question will be saved.
 
 ### Request
 
 ```json
 {
-    "test_questions": [
-        {
-            "test_question_id": "uuid",
-            "answer_text": "string",
-            "answer_audio_b64_encode": "UklGRiQAAABXQVZFZm10IBAAAAABAAEAESsAACJWAAACABAAZGF0YQAAAAA"
-        }
-    ]
+    "answer_text": "string",
+    "answer_audio": "<binary data>"
 }
 ```
 
@@ -323,7 +296,7 @@ Status: 200 OK
 Status: 404 Not Found
 
 {
-    "error": "test_id does not exist"
+    "error": "Test question not found."
 }
 ```
 
@@ -331,15 +304,7 @@ Status: 404 Not Found
 Status: 400 Bad Request
 
 {
-    "error": "test has already been submitted"
-}
-```
-
-```json
-Status: 400 Bad Request
-
-{
-    "error": "test_question_id is required"
+    "error": "Test question has already been submitted."
 }
 ```
 
@@ -347,10 +312,88 @@ Status: 400 Bad Request
 Status: 404 Not Found
 
 {
-    "error": "test_question_id does not exist"
+    "error": "The test question is not associated with any test."
 }
 ```
 
+```json
+Status: 404 Not Found
+
+{
+    "error": "The test question is not associated with any assessment."
+}
 ```
 
+# Audio APIs
+
+## GET /api/audio/?audio_type=question&question_id=1
+
+Possible parameter combinations:
+
+```
+- audio_type=instruction & id={question_type_id}
+
+- audio_type=question & id={question_id}
+
+- audio_type=correct_answer & id={question_id}
+
+- audio_type=answer & id={test_question_id}
+```
+
+### Response
+
+```
+Status: 200 OK
+
+Content-Type: audio/mp3
+
+<binary data>
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Missing required parameters."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Invalid parameters."
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Question type not found."
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Question not found."
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Test question not found."
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Audio file not found."
+}
 ```

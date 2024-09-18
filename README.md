@@ -183,6 +183,11 @@ Install `Prettier` extension for auto code formatting on save. Add the following
     "editor.formatOnSave": true,
 ```
 
+Tips:
+
+-   Use `Organize Imports` command in VSCode to sort and remove unused imports.
+-   Sometimes, prettier auto-formatting rules might conflix with eslint rules. Use `// prettier-ignore` to ignore the next line from prettier formatting.
+
 ### Additional Notes <a id="code-format-additional-notes"></a>
 
 -   Use lf (Unix) line endings for all files
