@@ -42,7 +42,7 @@ Question,Represents the actual questions.,question_id,INT,,,,Primary Key
 ,,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
 ,,question_text,VARCHAR(255),,,,Question text. E.g.: /k/ /aw/
 ,,question_audio_filepath,VARCHAR(255),,Yes,,"Filepath to question audio file recorded by teacher. E.g: questions/synthesis/question_synthesis_k_aw.mp3 (""question_"" + question name + question text)"
-,,correct_answer_text,VARCHAR(255),,Yes,,
+,,correct_answer_text,VARCHAR(255),,Yes,,Correct answer in text (for question that has answer in text)
 ,,correct_answer_audio_filepath,VARCHAR(255),,Yes,,"Filepath to correct answer audio file recorded by teacher. E.g.: questions/synthesis/correct_answer_synthesis_k_aw.mp3 (""correct_answer_"" + question name + question text)"
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
@@ -58,7 +58,7 @@ Assessment Type,"Represents assessment types. An assessment type can comprise of
 Assessment,Each record represents an actual assessment taken by a student.,assessment_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,assessment_type_id,INT,,,"N:1, AssessmentType(assessment_type_id)",Foreign key referencing assessment type
 ,,test_taker_id,CHAR(32),,,N:1; Account(account_id),Foreign key referencing the test taker's account
-,,submission_time,DATETIME,,Yes,,The submission time of the last test in the assessment
+,,assessment_submission_time,DATETIME,,Yes,,"The submission time of the last test in the assessment. If the submission time is not NULL, that means all individual tests for this assessement have been submitted."
 ,,test_taker_name,VARCHAR(100),,Yes,,"Test taker's name. In case a test taker does not have an account, the database will store their name and email instead. Since at the moment, we do require test_taker_id, this field is not neccessary."
 ,,test_taker_email,VARCHAR(100),,Yes,,Test taker's email.
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
@@ -69,7 +69,6 @@ Test Type,"Represents test types. A test consists of all questions in the DB of 
 ,,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
 ,,test_type_name,VARCHAR(100),,,,"Name of the test type. E.g.: Synthesis, Analysis, Listening, Single Phoneme Recognition"
 ,,num_questions,INT,,,,"Number of questions in the test. If number of questions = 0, the test type will contain all questions of the same type in the DB."
-,,test_instruction_text,VARCHAR(255),,,,???
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
@@ -77,8 +76,11 @@ Test Type,"Represents test types. A test consists of all questions in the DB of 
 Test,"Each record represents an actual test (e.g: synthesis, analysis,...) within an assessment taken by a student.",test_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
 ,,assessment_id,CHAR(32),,Yes,N:1; Assessment(assessment_id),Foreign key referencing the assessment as a test belongs to an assessment.
-,,submission_time,DATETIME,,Yes,,Date and time of the test submission
-,,num_correct_answers,INT,,Yes,,Number of correct answers
+,,test_ordinal,INT,,,,"The position of the test within the assessement, starting from 1."
+,,is_last_test,BOOLEAN,,,,Whether the test is the last test in an assessment
+,,test_submission_time,DATETIME,,Yes,,"Submission time of the last question (TestQuestion) in a test. If submission time is not NULL, that means all questions in the test has been submitted."
+,,auto_score,INT,,Yes,,"Number of correct answers as graded by machine. If auto_score is NULL, not all questions have been graded by a ML model."
+,,teacher_score,INT,,Yes,,"Number of correct answers as graded by teacher(s). If teacher_score is NULL, not all questions have been graded by teacher(s)."
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
@@ -94,13 +96,15 @@ Test Question,Each record represent an actual question in a test within an asses
 ,,test_id,CHAR(32),,,N:1; Test(test_id),Foreign key referencing test
 ,,question_id,INT,,,N:1; Question(question_id),Foreign key referencing question
 ,,question_ordinal,INT,,,,"The position of the question in the test, starting from 1."
+,,is_last_question,BOOLEAN,,,,Whether the question is the last question in a test
 ,,answer_text,VARCHAR(255),,Yes,,Answer in text (if the question requires)
-,,answer_audio_filepath,VARCHAR(255),,Yes,,Filepath to answer audio file recorded by test taker. E.g.: tests/<yyyy-mm-dd>/assessment_<assessment_id>/test_<test_id>/answer_<test_question_id>.mp3
+,,answer_audio_filepath,VARCHAR(255),,Yes,,Filepath to answer audio file recorded by test taker. E.g.: assignments/<yyyy-mm-dd>/assessment_<assessment_id>/test_<test_id>/answer_<test_question_id>.mp3
+,,test_question_submission_time,DATETIME,,Yes,,"Submission time of the answer with either: answer text or answer audio or ""none answer"". If submission time is not NULL, that means the answer has been submitted."
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Auto Grading History,Each record repserents an evaluation of an machine learning of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times.,auto_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+Auto Grading History,Each record repserents an evaluation of an machine learning model of a specific question in a test within an assessment taken by a student. An question can be evaluated multiple times. The answer's correctness is based on the last evalution.,auto_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_question_id,CHAR(32),,,N:1; TestQuestion(test_question_id),Foreign key referencing test question
 ,,model_name,VARCHAR(255),,Yes,,Name of the machine model. Might be useful when we use different machine learning models.
 ,,auto_evaluation,FLOAT,,,,"Confidence level that the answer is correct, range from 0 - 100. Higher value means higher confidence."
@@ -108,7 +112,7 @@ Auto Grading History,Each record repserents an evaluation of an machine learning
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Teacher Grading History,Each record repserents an evaluation of a teacher of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times.,teacher_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+Teacher Grading History,Each record repserents an evaluation of a teacher of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times. The answer's correctness is based on the last evalution.,teacher_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_question_id,CHAR(32),,,N:1; Question(question_id),Foreign key referencing test question
 ,,teacher_account_id,CHAR(32),,,N:1; Account(account_id),Foreign key referencing teacher account
 ,,teacher_evaluation,BOOLEAN,,,,"Correctness of the answer: true (correct), false (incorrect)"
