@@ -105,6 +105,8 @@ CREATE TABLE TestQuestion (
     is_last_question BOOLEAN NOT NULL,
     answer_text VARCHAR(255),
     answer_audio_filepath VARCHAR(255),
+    latest_auto_evaluation FLOAT,
+    latest_teacher_evaluation BOOLEAN,
     test_question_submission_time DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

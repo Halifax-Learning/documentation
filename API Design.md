@@ -5,8 +5,11 @@
     -   [POST /api/login](#post-apilogin)
 -   [Assessment APIs](#assessment-apis)
     -   [GET /api/assessment_types](#get-apiassessment_types)
+    -   [GET /api/assessments](#get-apiassessments)
+    -   [GET /api/assessments/{assessment_id}](#get-apiassessmentsassessment_id)
     -   [POST /api/assessments](#post-apiassessments)
     -   [PUT /api/test_questions/{test_question_id}](#put-apitest_questionstest_question_id)
+    -   [POST /api/teacher_grading_history](#post-apiteacher_grading_history)
 -   [Audio APIs](#audio-apis)
     -   [GET /api/audio/?audio_type=question&question_id=1](#get-apiaudioaudio_typequestionquestion_id1)
 
@@ -133,9 +136,130 @@ Status: 200 OK
     "assessment_types": [
         {
             "assessment_type_id": 1,
-            "assessment_name": "Phonological Skills Assessment"
+            "assessment_type_name": "Phonological Skills Assessment"
         }
     ]
+}
+```
+
+## GET /api/assessments
+
+Teacher only.
+
+### Response
+
+```json
+Status: 200 OK
+
+{
+    "assessments": [
+        {
+            "assessment_id": "uuid",
+            "assessment_type": {
+                "assessment_type_id": 1,
+                "assessment_type_name": "Phonological Skills Assessment"
+            },
+            "test_taker": {
+                "account_id": "uuid",
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "student.2@gmail.com",
+                "current_enrolled_course": null
+            },
+            "assessment_submission_time": "2020-02-02T02:02:02Z",
+            "is_all_tests_graded_by_teacher": false
+        }
+    ]
+}
+```
+
+## GET /api/assessments/{assessment_id}
+
+Teacher only. Get a `Assessment` record and associated `Test` records and `TestQuestion` records in the database for teacher evaluation.
+
+**Note**: We don't send the audio filepaths directly in the response because we don't want to expose the file structure of the server. Instead, we set the property `has_question_audio` to `true` or `false` to indicate whether question audio files exist for a test. Similarly, we set the property `has_correct_answer_audio` to indicate whether correct answer audio files exist for a test and `has_answer_audio` to indicate whether answer audio files exist for a test question.
+We will use the `GET /api/audio` endpoint to get the audio files one by one.
+
+### Response
+
+```json
+Status: 200 OK
+
+{
+    "assessment_id": "uuid",
+    "assessment_type": {
+        "assessment_type_id": 1,
+        "assessment_name": "Phonological Skills Assessment"
+    },
+    "test_taker": {
+        "account_id": "uuid",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "student.2@gmail.com",
+        "current_enrolled_course": null
+    },
+    "assessment_submission_time": "2020-02-02T02:02:02Z",
+    "tests": [
+        {
+            "test_id": "uuid",
+            "test_type": {
+                "test_type_id": 1,
+                "question_type": {
+                    "question_type_id": 1,
+                    "question_type_name": "Synthesis",
+                    "question_instruction_text": "I'll say two sounds, you tell me the word."
+                },
+                "test_type_name": "Synthesis",
+                "num_questions": 20,
+                "has_question_audio": true,
+                "has_correct_answer_audio": true
+            },
+            "test_ordinal": 1,
+            "is_last_test": false,
+            "test_submission_time": "2020-02-02T02:02:02Z",
+            "auto_score": null,
+            "teacher_score": null,
+            "test_questions": [
+                {
+                    "test_question_id": "uuid",
+                    "question": {
+                        "question_id": 101,
+                        "question_text": "/k/ /aw/",
+                    },
+                    "question_ordinal": 1,
+                    "is_last_question": false,
+                    "answer_text": null,
+                    "has_answer_audio": true,
+                    "latest_auto_evaluation": null,
+                    "latest_teacher_evaluation": null,
+                    "test_question_submission_time": "2020-02-02T02:02:02Z",
+                    "auto_grading_history": [
+                        {
+                            "auto_grading_history_id": "uuid",
+                            "model_name": "string",
+                            "auto_evaluation": 90
+                        }
+                    ],
+                    "teacher_grading_history": [
+                        {
+                            "teacher_grading_history_id": "uuid",
+                            "teacher_account_id": "uuid",
+                            "teacher_evaluation": true,
+                            "teacher_comment": "string",
+                        }
+                    ]
+                }
+            ]
+        },
+    ]
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Assessment not found."
 }
 ```
 
@@ -322,6 +446,34 @@ Status: 404 Not Found
 {
     "error": "The test question is not associated with any assessment."
 }
+```
+
+## POST /api/teacher_grading_history
+
+### Request
+
+```json
+{
+    "teacher_account_id": "uuid",
+    "test_questions": [
+        {
+            "test_question_id": "uuid",
+            "teacher_evaluation": true,
+            "teacher_comment": "string"
+        },
+        {
+            "test_question_id": "uuid",
+            "teacher_evaluation": false,
+            "teacher_comment": "string"
+        }
+    ]
+}
+```
+
+### Response
+
+```json
+Status: 201 Created
 ```
 
 # Audio APIs

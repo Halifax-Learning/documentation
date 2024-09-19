@@ -79,8 +79,8 @@ Test,"Each record represents an actual test (e.g: synthesis, analysis,...) withi
 ,,test_ordinal,INT,,,,"The position of the test within the assessement, starting from 1."
 ,,is_last_test,BOOLEAN,,,,Whether the test is the last test in an assessment
 ,,test_submission_time,DATETIME,,Yes,,"Submission time of the last question (TestQuestion) in a test. If submission time is not NULL, that means all questions in the test has been submitted."
-,,auto_score,INT,,Yes,,"Number of correct answers as graded by machine. If auto_score is NULL, not all questions have been graded by a ML model."
-,,teacher_score,INT,,Yes,,"Number of correct answers as graded by teacher(s). If teacher_score is NULL, not all questions have been graded by teacher(s)."
+,,auto_score,INT,,Yes,,"Number of correct answers as graded by machine. If auto_score is NULL, not all questions have been graded by a ML model. Should a column convey DOUBLE MEANING like this?"
+,,teacher_score,INT,,Yes,,"Number of correct answers as graded by teacher(s). If teacher_score is NULL, not all questions have been graded by teacher(s). Should a column convey DOUBLE MEANING like this?"
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
@@ -99,6 +99,8 @@ Test Question,Each record represent an actual question in a test within an asses
 ,,is_last_question,BOOLEAN,,,,Whether the question is the last question in a test
 ,,answer_text,VARCHAR(255),,Yes,,Answer in text (if the question requires)
 ,,answer_audio_filepath,VARCHAR(255),,Yes,,Filepath to answer audio file recorded by test taker. E.g.: assignments/<yyyy-mm-dd>/assessment_<assessment_id>/test_<test_id>/answer_<test_question_id>.mp3
+,,latest_auto_evaluation,FLOAT,,,,auto_evaluation of the latest associated AutoGradingHistory record
+,,latest_teacher_evaluation,INT,,,,teacher_evaluation of the latest associated TeacherGradingHistory record
 ,,test_question_submission_time,DATETIME,,Yes,,"Submission time of the answer with either: answer text or answer audio or ""none answer"". If submission time is not NULL, that means the answer has been submitted."
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
