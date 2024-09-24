@@ -89,11 +89,15 @@ CREATE TABLE Test (
 );
 
 CREATE TABLE AssessmentTypeTestTypeMapping (
+    assessment_type_test_type_mapping_id INT PRIMARY KEY,
     assessment_type_id INT,
     test_type_id INT,
-    PRIMARY KEY (assessment_type_id, test_type_id),
     FOREIGN KEY (assessment_type_id) REFERENCES AssessmentType(assessment_type_id),
-    FOREIGN KEY (test_type_id) REFERENCES TestType(test_type_id)
+    FOREIGN KEY (test_type_id) REFERENCES TestType(test_type_id),
+    UNIQUE (assessment_type_id, test_type_id),
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME
 );
 
 
@@ -277,8 +281,8 @@ INSERT INTO TestType(test_type_id, question_type_id, test_type_name, num_questio
     (3, 3, 'Listening', 5),
     (4, 4, 'Single Phoneme Recognition', 5);
 
-INSERT INTO AssessmentTypeTestTypeMapping(assessment_type_id, test_type_id) VALUES
-    (1, 1),
-    (1, 2),
-    (1, 3),
-    (1, 4);
+INSERT INTO AssessmentTypeTestTypeMapping(assessment_type_test_type_mapping_id, assessment_type_id, test_type_id) VALUES
+    (1, 1, 1),
+    (2, 1, 2),
+    (3, 1, 3),
+    (4, 1, 4);

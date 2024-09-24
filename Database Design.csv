@@ -86,8 +86,9 @@ Test,"Each record represents an actual test (e.g: synthesis, analysis,...) withi
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
 ,,,,,,,
-Assessment Type Test Type Mapping,"Maps the relationship between assessment types and test types. E.g.: The ""Phonological Skills Assessment"" assessment type contains 4 test types: synthesis, analysis, listening, single phoneme recognition.",assessment_type_id,INT,,,"N:1, AssessmentType(assessment_type_id)",Foreign key referencing assessment type
-,,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
+Assessment Type Test Type Mapping,"Maps the relationship between assessment types and test types. E.g.: The ""Phonological Skills Assessment"" assessment type contains 4 test types: synthesis, analysis, listening, single phoneme recognition.",assessment_type_test_type_mapping_id,INT,,,,Primary Key
+,,assessment_type_id,INT,,,"N:1, AssessmentType(assessment_type_id)",Foreign key referencing assessment type
+,,test_type_id,INT,,,N:1; TestType(test_type_id),"Foreign key referencing test type. UNIQUE (assessment_type_id, test_type_id)"
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)

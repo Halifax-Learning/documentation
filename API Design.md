@@ -237,7 +237,8 @@ Status: 200 OK
                         {
                             "auto_grading_history_id": "uuid",
                             "model_name": "string",
-                            "auto_evaluation": 90
+                            "auto_evaluation": 90,
+                            "created_at": "2020-02-02T02:02:02Z"
                         }
                     ],
                     "teacher_grading_history": [
@@ -246,6 +247,7 @@ Status: 200 OK
                             "teacher_account_id": "uuid",
                             "teacher_evaluation": true,
                             "teacher_comment": "string",
+                            "created_at": "2020-02-02T02:02:02Z"
                         }
                     ]
                 }

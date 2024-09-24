@@ -73,6 +73,7 @@ Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/Halifax
 -   VSCode extensions:
     -   **Pylint**: for real-time code analysis
     -   **Black**: for auto code formatting on save
+    -   **isort**: for sorting imports for python files
     -   **REST Client**: for testing API
 
 ### Frontend <a id="tech-frontend"></a>
@@ -160,6 +161,10 @@ npx prettier --write src
 ```
 
 It will format all the files in the `src` directory based on the rules specified in `.prettierrc` file (we will not really use this command, because we will use the VSCode extension).
+
+Tips:
+
+-   Use `Organize Imports` command in VSCode to sort imports for python files (requires `isort` extension).
 
 <br>
 
