@@ -70,6 +70,7 @@ Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/Halifax
 
 -   **pylint, pylint-django**: for linting python code
 -   **black**: for code formatting
+-   **django-sqlformatter**: for formatting SQL queries in logs
 -   VSCode extensions:
     -   **Pylint**: for real-time code analysis
     -   **Black**: for auto code formatting on save

@@ -276,10 +276,10 @@ INSERT INTO AssessmentType(assessment_type_id, assessment_type_name) VALUES
     (1, 'Phonological Skills Assessment');
 
 INSERT INTO TestType(test_type_id, question_type_id, test_type_name, num_questions) VALUES
-    (1, 1, 'Synthesis', 5),
-    (2, 2, 'Analysis', 5),
-    (3, 3, 'Listening', 5),
-    (4, 4, 'Single Phoneme Recognition', 5);
+    (1, 1, 'Synthesis', 3),
+    (2, 2, 'Analysis', 3),
+    (3, 3, 'Listening', 3),
+    (4, 4, 'Single Phoneme Recognition', 3);
 
 INSERT INTO AssessmentTypeTestTypeMapping(assessment_type_test_type_mapping_id, assessment_type_id, test_type_id) VALUES
     (1, 1, 1),
