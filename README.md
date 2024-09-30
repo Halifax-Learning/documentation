@@ -65,6 +65,7 @@ Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/Halifax
 -   **Django, Django Rest Framework**
 -   **mysqlclient**
 -   **bcrypt**: for hashing and verifying password
+-   **PyJWT**: for generating and verifying JWT tokens
 
 #### Useful tools for backend
 
@@ -83,9 +84,12 @@ Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/Halifax
 -   **ReactJS**: component-based frontend library
 -   **React Redux, React Redux Toolkit**: for state management
 -   **React Router**: for routing
+-   **React Media Recorder**: for managing audio recording
 -   **TypeScript**: for type checking
 -   **Material UI**: for UI components and styling
 -   **Axios**: for making HTTP requests
+-   **Yup**: for form validation
+-   **Jszip**: for zipping and unzipping files
 
 #### Useful tools for frontend
 
