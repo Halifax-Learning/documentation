@@ -1,0 +1,134 @@
+<--! Synthesis -->
+
+<--! Synthesis instruction -->
+<speak>
+You will hear two sounds, and you will have to pronounce the word. For example, if you hear
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+    <phoneme alphabet="ipa" ph="m">/m/</phoneme>
+</prosody>
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+    <phoneme alphabet="ipa" ph="u">/oo/</phoneme>
+</prosody>
+<break time="250ms"/>
+
+you will say
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+    moo
+</prosody>
+</speak>
+
+
+<--! question k_aw -->
+<speak>
+<phoneme alphabet="ipa" ph="k">k</phoneme>
+<break time="250ms"/>
+<phoneme alphabet="ipa" ph="ɔ">ɔ</phoneme>
+</speak>
+
+<--! correct answer k_aw -->
+<speak>
+<phoneme alphabet="ipa" ph="kɔ">kaw</phoneme>
+</speak>
+
+<--! question t_o_e -->
+<speak>
+<phoneme alphabet="ipa" ph="t">t</phoneme>
+<break time="250ms"/>
+<phoneme alphabet="ipa" ph="oʊ">oʊ</phoneme>
+</speak>
+
+<--! correct answer t_o_e -->
+<speak>
+<phoneme alphabet="ipa" ph="toʊ">toe</phoneme>
+</speak>
+
+<--! Analysis -->
+
+<--! Analysis instruction -->
+<speak>
+You will hear a word, and you will have to identify the sounds. For example, if you hear
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+    moot
+</prosody>
+<break time="250ms"/>
+
+you will say
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+<phoneme alphabet="ipa" ph="m">/m/</phoneme>
+</prosody>
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+<phoneme alphabet="ipa" ph="u">/oo/</phoneme>
+</prosody>
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+<phoneme alphabet="ipa" ph="t">/t/</phoneme>
+</prosody>
+</speak>
+
+
+<--! question mat -->
+<speak>
+mat
+</speak>
+
+<--! correct answer mat -->
+<speak>
+<phoneme alphabet="ipa" ph="m">m</phoneme>
+<break time="250ms"/>
+<phoneme alphabet="ipa" ph="a">a</phoneme>
+<break time="250ms"/>
+<phoneme alphabet="ipa" ph="t">t</phoneme>
+</speak>
+
+<--! question shoot -->
+<speak>
+shoot
+</speak>
+
+<--! correct answer shoot -->
+<speak>
+<phoneme alphabet="ipa" ph="ʃ">ʃ</phoneme>
+<break time="250ms"/>
+<phoneme alphabet="ipa" ph="u">u</phoneme>
+<break time="250ms"/>
+<phoneme alphabet="ipa" ph="t">t</phoneme>
+</speak>
+
+<--! Listening -->
+
+<--! Listening instruction -->
+<speak>
+You will hear a word, and you will have to identify the middle vowel sound. For example, if you hear
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+    moot
+</prosody>
+
+you will say
+
+<break time="250ms"/>
+<prosody volume="x-loud" rate="-25%">
+<phoneme alphabet="ipa" ph="u">/oo/</phoneme>
+</prosody>
+</speak>
+
+<--! Single Phoneme Recognition -->
+
+<--! Single Phoneme Recognition instruction -->
+<speak>
+Look at the sound card and pronounce the sound you see.
+</speak>
