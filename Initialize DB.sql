@@ -149,10 +149,10 @@ INSERT INTO Account(account_id, account_role, first_name, last_name, email, hash
     ('7f8d6872203211ea8817bc2411ffed9d', 'teacher', 'Jane', 'Smith', 'teacher.1@gmail.com', '$2b$12$eRis9ZXp/omoi.HWp7Abc.8TFYfV1pPYGDQ/yoTWoeEandNKR0BMe', NULL);
 
 INSERT INTO QuestionType (question_type_id, question_type_name, question_instruction_text, instruction_audio_filepath) VALUES
-    (1, 'Synthesis', 'You will hear two sounds, and you will have to pronounce the word. For example, if you hear: "/m/ /oo/", you will say: "moo".', 'questions/synthesis/instruction_synthesis.mp3'),
-    (2, 'Analysis', 'You will hear a word, and you will have to identify the sounds. For example, if you hear: "moot", you will say: "/m/ /oo/ /t/".', 'questions/analysis/instruction_analysis.mp3'),
-    (3, 'Listening', 'You will hear a word, and you will have to identify the middle vowel sound. For example, if you hear: "moot", you will say: "/oo/".', 'questions/listening/instruction_listening.mp3'),
-    (4, 'Single Phoneme Recognition', 'Look at the sound card and pronounce the sound you see.', 'questions/single_phoneme_recognition/instruction_single_phoneme_recognition.mp3');
+    (1, 'Synthesis', 'I''m going to say some sounds, put them together and tell me the word they would make. Some words will be real, but some will be fake. For example, if I said: "/b/ /oo/", you would say: "boo".', 'questions/synthesis/instruction_synthesis.mp3'),
+    (2, 'Analysis', 'I''m going to say some syllable, tell me the sound that you hear. Some words will be real, but some will be fake. For example, if I said "boot", you would say: "/b/ /oo/ /t/".', 'questions/analysis/instruction_analysis.mp3'),
+    (3, 'Listening', 'I''m going to say some syllable, tell me just the middle vowel sound that you hear. Some syllables will be real words, but some will be fake. For example, if I said: "boot", you would say: "/oo/".', 'questions/listening/instruction_listening.mp3'),
+    (4, 'Single Phoneme Recognition', 'I''m going to show you some letters, tell me the sound they would make if you saw them in a word.', 'questions/single_phoneme_recognition/instruction_single_phoneme_recognition.mp3');
 
 INSERT INTO Question(question_id, question_type_id, question_text, question_audio_filepath, correct_answer_audio_filepath) VALUES
     (101, 1, '/k/ /aw/', 'questions/synthesis/question_synthesis_k_aw.mp3', 'questions/synthesis/correct_answer_synthesis_k_aw.mp3'),
