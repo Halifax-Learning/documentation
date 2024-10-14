@@ -42,7 +42,7 @@ Question,Represents the actual questions.,question_id,INT,,,,Primary Key
 ,,question_type_id,INT,,,N:1; QuestionType(question_type_id),Foreign key referencing question type
 ,,question_text,VARCHAR(255),,,,Question text. E.g.: /k/ /aw/
 ,,question_audio_filepath,VARCHAR(255),,Yes,,"Filepath to question audio file recorded by teacher. E.g: questions/synthesis/question_synthesis_k_aw.mp3 (""question_"" + question name + question text)"
-,,correct_answer_text,VARCHAR(255),,Yes,,Correct answer in text (for question that has answer in text)
+,,correct_answer_text,VARCHAR(255),,Yes,,IPA transcript of the correct answer audio
 ,,correct_answer_audio_filepath,VARCHAR(255),,Yes,,"Filepath to correct answer audio file recorded by teacher. E.g.: questions/synthesis/correct_answer_synthesis_k_aw.mp3 (""correct_answer_"" + question name + question text)"
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
