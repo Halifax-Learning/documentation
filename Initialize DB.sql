@@ -1,6 +1,6 @@
 USE hlc;
 
-DROP TABLE IF EXISTS Account, QuestionType, Question, AssessmentType, Assessment, TestType, Test, AssessmentTypeTestTypeMapping, TestQuestion, AutoGradingHistory, TeacherGradingHistory;
+DROP TABLE IF EXISTS Account, EmailVerification, QuestionType, Question, AssessmentType, Assessment, TestType, Test, AssessmentTypeTestTypeMapping, TestQuestion, AutoGradingHistory, TeacherGradingHistory;
 
 CREATE TABLE Account (
     account_id CHAR(32) PRIMARY KEY,
@@ -14,6 +14,20 @@ CREATE TABLE Account (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at DATETIME
+);
+
+CREATE TABLE EmailVerification (
+    email_verification_id CHAR(32) PRIMARY KEY,
+    account_id CHAR(32),
+    email VARCHAR(100),
+    verification_code VARCHAR(100) NOT NULL,
+    purpose VARCHAR(100) NOT NULL,
+    is_used BOOLEAN DEFAULT FALSE NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at DATETIME,
+    FOREIGN KEY (account_id) REFERENCES Account(account_id),
+    CHECK (account_id IS NOT NULL OR email IS NOT NULL)
 );
 
 CREATE TABLE QuestionType (
@@ -54,6 +68,7 @@ CREATE TABLE Assessment (
     assessment_type_id INT NOT NULL,
     test_taker_id CHAR(32),
     assessment_submission_time DATETIME,
+    graders JSON,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at DATETIME,
@@ -123,6 +138,7 @@ CREATE TABLE AutoGradingHistory (
     auto_grading_history_id CHAR(32) PRIMARY KEY,
     test_question_id CHAR(32) NOT NULL,
     model_name VARCHAR(255),
+    transcription VARCHAR(255),
     auto_evaluation FLOAT NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -144,9 +160,10 @@ CREATE TABLE TeacherGradingHistory (
 );
 
 
-INSERT INTO Account(account_id, account_role, first_name, last_name, email, hashed_password, current_enrolled_course) VALUES
-    ('58973104203211ea8817bc2411ffed9d', 'student', 'John', 'Smith', 'student.1@gmail.com', '$2b$12$EigZJUvqsM5lVzgjVOdjP.SzYJZfRuDOiU4OTBHBM0Qi6aKxZZssq', 'Course 1'),
-    ('7f8d6872203211ea8817bc2411ffed9d', 'teacher', 'Jane', 'Smith', 'teacher.1@gmail.com', '$2b$12$eRis9ZXp/omoi.HWp7Abc.8TFYfV1pPYGDQ/yoTWoeEandNKR0BMe', NULL);
+INSERT INTO Account(account_id, account_role, first_name, last_name, email, hashed_password, is_activated, current_enrolled_course) VALUES
+    ('38973104203211ea8817bc2411ffed9d', 'admin', 'Admin', 'HLC', 'user.1.hlc.hlx@gmail.com', '$2b$12$EigZJUvqsM5lVzgjVOdjP.SzYJZfRuDOiU4OTBHBM0Qi6aKxZZssq', 1, NULL),
+    ('58973104203211ea8817bc2411ffed9d', 'student', 'John', 'Smith', 'student.1@gmail.com', '$2b$12$EigZJUvqsM5lVzgjVOdjP.SzYJZfRuDOiU4OTBHBM0Qi6aKxZZssq', 1, 'Course 1'),
+    ('7f8d6872203211ea8817bc2411ffed9d', 'teacher', 'Jane', 'Smith', 'teacher.1@gmail.com', '$2b$12$eRis9ZXp/omoi.HWp7Abc.8TFYfV1pPYGDQ/yoTWoeEandNKR0BMe', 1, NULL);
 
 INSERT INTO QuestionType (question_type_id, question_type_name, question_instruction_text, instruction_audio_filepath) VALUES
     (1, 'Synthesis', 'I''m going to say some sounds, put them together and tell me the word they would make. Some words will be real, but some will be fake. For example, if I said: "/b/ /oo/", you would say: "boo".', 'questions/synthesis/instruction_synthesis.mp3'),

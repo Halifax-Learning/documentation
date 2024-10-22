@@ -1,11 +1,10 @@
 Table,Table Description,Field,Type,Default Value,Nullable,Foreign Key,Description
 ,,,,,,,
 Account,Holds info of registered users (teachers and test takers),account_id,CHAR(32),,,,Primary Key (UUID without hyphens)
-,,account_role,VARCHAR(50),,,,"Account role (e.g., student, teacher)"
+,,account_role,VARCHAR(50),,,,"Account role (student, teacher or admin)"
 ,,first_name,VARCHAR(100),,,,First name
 ,,last_name,VARCHAR(100),,,,Last name
 ,,email,VARCHAR(100),,,,"Email address, also used as username"
-,,username,VARCHAR(100),,,,Username
 ,,hashed_password,VARCHAR(255),,,,One way encoded password
 ,,is_activated,BOOLEAN,FALSE,,,Whether the account is activated yet (currently have no effect)
 ,,current_entrolled_course,VARCHAR(255),,Yes,,"The current course of the student at HLC. May create a new table Course later to hold more information if needed. For now, use this field to group into courses."
@@ -13,7 +12,19 @@ Account,Holds info of registered users (teachers and test takers),account_id,CHA
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Additional Account Information,"Hold additional information of registered users (mostly students).
+Email Verification,Holds the verification codes for certain accounts or emails for certain purpose,email_verification_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+,,account_id,CHAR(32),,Yes,"N:1, Account(account_id)",The account id the verification code belongs to.
+,,email,VARCHAR(100),,Yes,,The email the verification code belongs to. Both account id and email cannot be NULL at the same time.
+,,verification_code,VARCHAR(100),,,,Verification code (UUID with hyphen)
+,,purpose,VARCHAR(100),,,,"The purpose of verification (Account Verification, Teacher Account Creation)"
+,,is_used,BOOLEAN,FALSE,,,Whether the verification has taken place
+,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
+,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
+,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
+,,,,,,,
+,,,,,,,
+Additional Account Information,"NOT CURRENTLY IMPLEMENTED
+Hold additional information of registered users (mostly students).
 This table is not needed right now, but maybe will be needed in the future.",additional_account_info_id,CHAR(32),,,,
 ,,account_id,CHAR(32),,,1:1; Account(account_id),Foreign Key referencing account
 ,,address,VARCHAR(255),,Yes,,
@@ -59,8 +70,7 @@ Assessment,Each record represents an actual assessment taken by a student.,asses
 ,,assessment_type_id,INT,,,"N:1, AssessmentType(assessment_type_id)",Foreign key referencing assessment type
 ,,test_taker_id,CHAR(32),,,N:1; Account(account_id),Foreign key referencing the test taker's account
 ,,assessment_submission_time,DATETIME,,Yes,,"The submission time of the last test in the assessment. If the submission time is not NULL, that means all individual tests for this assessement have been submitted."
-,,test_taker_name,VARCHAR(100),,Yes,,"Test taker's name. In case a test taker does not have an account, the database will store their name and email instead. Since at the moment, we do require test_taker_id, this field is not neccessary."
-,,test_taker_email,VARCHAR(100),,Yes,,Test taker's email.
+,,graders,JSON,,Yes,,"List of objects that contain information about every teacher that grades at least one question in the assessment, like this: { ""account_id"": ""string"", ""full_name"" : ""Jane Smith"" }"
 ,,created_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for creation
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)

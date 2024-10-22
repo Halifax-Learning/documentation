@@ -2,6 +2,9 @@
 
 -   [User APIs](#user-apis)
     -   [POST /api/register](#post-apiregister)
+    -   [POST /api/send_verification_email](#post-apisend_verification_email)
+    -   [POST /verify_email](#post-verify_email)
+    -   [POST /api/send_teacher_invitation](#post-apisend_teacher_invitation)
     -   [POST /api/login](#post-apilogin)
     -   [Response for missing or invalid token](#response-for-missing-or-invalid-token)
 -   [Assessment APIs](#assessment-apis)
@@ -14,7 +17,8 @@
     -   [POST /api/teacher_grading_history](#post-apiteacher_grading_history)
 -   [Audio APIs](#audio-apis)
     -   [GET /api/audio/<test_id>](#get-apiaudiotest_id)
-    -   [GET /api/audio/?audio_type=question&question_id=1](#get-apiaudioaudio_typequestionquestion_id1) (DEPRECATED)
+
+Notes: Failed responses listed here are not exhaustive. The server may return other error responses not listed here.
 
 # User APIs
 
@@ -63,7 +67,233 @@ Status: 400 Bad Request
 Status: 400 Bad Request
 
 {
+    "error": "Invalid email format."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
     "error": "Email already in use."
+}
+```
+
+### Error response specific to teacher registration
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Verification Code not found."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "This verification code is not for creating a teacher account."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "This email is not authorized to create a teacher account."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Verification code already used."
+}
+```
+
+## POST /api/send_verification_email
+
+Called after user registers for an account. Will create a `EmailVerification` record in the database and send a verification email with a verification link to the user's email address.
+
+### Request
+
+```json
+{
+    "email": "student.1@gmail"
+}
+```
+
+### Response
+
+```json
+Status: 201 OK
+
+{
+    "message": "Verification email sent."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Missing required body parameter: email."
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Account not found."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Account already verified."
+}
+```
+
+```json
+Status: 500
+
+{
+    "error": "Failed to send email"
+}
+```
+
+## POST /verify_email
+
+Called when a user clicks the verification link in the email. Will update the `Account` record in the database to activate the account and deactivate the `EmailVerification` record.
+
+### Request
+
+```json
+{
+    "token": "string"
+}
+```
+
+### Response
+
+```json
+Status: 200 OK
+
+{
+    "message": "Email verified successfully."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Missing required body parameters: token."
+}
+```
+
+```json
+Status: 404 Not Found
+
+{
+    "error": "Verification Code not found."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "This verification code is not for email verification."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Account not found."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Email already verified."
+}
+```
+
+```json
+Status: 500
+
+{
+    "error": "Internal Server Error. Please try again later."
+}
+```
+
+### POST /api/send_teacher_invitation
+
+Accessed by admin. Called when admin sends an invitation email to a teacher to create an account.
+
+### Request
+
+```json
+{
+    "email": "teacher.1@gmail.com"
+}
+```
+
+### Response
+
+```json
+Status: 201 Created
+
+{
+    "message": "Invitation email sent."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Missing required body parameter: email."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Invalid email format."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Verification email already sent."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Email already in use."
+}
+```
+
+```json
+{
+    "error": "Failed to send email."
 }
 ```
 
@@ -101,6 +331,14 @@ Status: 400 Bad Request
 
 {
     "error": "Missing required body parameters."
+}
+```
+
+```json
+Status: 400 Bad Request
+
+{
+    "error": "Account not yet activated."
 }
 ```
 
@@ -191,6 +429,10 @@ Status: 200 OK
                 "current_enrolled_course": null
             },
             "assessment_submission_time": "2020-02-02T02:02:02Z",
+            "graders": [{
+                "account_id": "uuid",
+                "full_name": "Jane Smith"
+            }],
             "is_all_tests_graded_by_teacher": false,
             "tests": [
                 {
@@ -558,7 +800,7 @@ Called when a teacher clicks the "Save" button in the grading screen.
 Authorization: Bearer <token>
 
 {
-    "teacher_account_id": "uuid",
+    "assessment_id": "uuid",
     "test_questions": [
         {
             "test_question_id": "uuid",
@@ -592,7 +834,7 @@ Status: 403 Forbidden
 Status: 400 Bad Request
 
 {
-    "error": "Missing required body parameters: teacher_evaluation | test_question_id."
+    "error": "Missing required body parameters."
 }
 ```
 
@@ -656,78 +898,4 @@ Status: 200 OK
 Content-Type: application/zip
 
 Content-Disposition: attachment; filename="test_<test_id>_audios.zip"
-```
-
-## GET /api/audio/?audio_type=question&question_id=1
-
-DEPRECATED: This endpoint is deprecated and is not used.
-
-Possible parameter combinations:
-
-```
--   audio_type=instruction & id={question_type_id}
-
--   audio_type=question & id={question_id}
-
--   audio_type=correct_answer & id={question_id}
-
--   audio_type=answer & id={test_question_id}
-```
-
-### Response
-
-```http
-Status: 200 OK
-
-Content-Type: audio/mp3
-
-<binary data>
-```
-
-```json
-Status: 400 Bad Request
-
-{
-    "error": "Missing required parameters: audio_type, id."
-}
-```
-
-```json
-Status: 400 Bad Request
-
-{
-    "error": "Invalid parameters: audio_type."
-}
-```
-
-```json
-Status: 404 Not Found
-
-{
-    "error": "Question Type not found."
-}
-```
-
-```json
-Status: 404 Not Found
-
-{
-    "error": "Question not found."
-}
-```
-
-```json
-Status: 404 Not Found
-
-{
-    "error": "Test Question not found."
-}
-```
-
-```json
-Status: 404 Not Found
-
-{
-    "error": "Audio File not found."
-}
 ```
