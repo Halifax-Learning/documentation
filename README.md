@@ -1,15 +1,20 @@
 ### Table of Contents
 
 -   [Important Links](#important-links)
+-   [Database Design](#database-design)
+-   [Backend](#backend)
+    -   [API Design](#api-design)
+    -   [Query Optimization](#query-optimization)
+    -   [Audio Files](#audio-files)
+    -   [Audio Matching Model](#audio-matching-model)
+-   [Frontend Design](#frontend-design)
+-   [Deployment](#deployment)
 -   [Technologies and Tools](#technologies-and-tools)
     -   [Database](#database)
     -   [Backend](#tech-backend)
         -   [Useful tools for backend](#useful-tools-for-backend)
     -   [Frontend](#tech-frontend)
         -   [Useful tools for frontend](#useful-tools-for-frontend)
--   [Database Design](#database-design)
--   [API Design](#api-design)
--   [Frontend Design](#frontend-design)
 -   [Code Formatting and Linting](#code-formatting-and-linting)
     -   [Backend](#code-format-backend)
     -   [Frontend](#code-format-frontend)
@@ -45,13 +50,59 @@ This diagram shows the relationships between the tables in the database. The onl
 
 For more details of each table, please refer to the [Database Design](https://smuhalifax-my.sharepoint.com/:x:/r/personal/nghia_phan_smu_ca/Documents/Halifax%20Learning/Database%20Design.xlsx?d=w44f0395936c2400ba03d9ae51da1dd89&csf=1&web=1&e=NzHKnL) on OneDrive or the [Database Design.csv](/Database%20Design.csv) on this repository.
 
-## API Design
+## Backend
+
+### API Design
 
 Refer to the [API Design](/API%20Design.md) for the details of the API endpoints.
+
+### Query Optimization
+
+To improve query performance and database integrity, several optimizations were implemented:
+
+-   **Efficient Data Retrieval**: Using select_related() and prefetch_related() in Django, join operations are performed when retrieving data across related tables, reducing the number of separate database calls.
+
+-   **Bulk Operations**: For creating and updating multiple records, bulk_create() and bulk_update() were used, which minimizes the number of queries required for these tasks.
+
+-   **Atomic Transactions**: To ensure database integrity, all database write operations for each API are grouped within an atomic transaction. This setup guarantees that either all operations are completed or none are, preserving data consistency.
+
+### Audio Files
+
+All audio files are stored on the file system of the SMU server, with only file paths saved in the database tables. These files are retrieved via the GET /api/audio/{test_id} API, which provides audio files for a test. Several key optimizations ensure efficient and secure audio handling:
+
+-   **Audio Processing**: The original files from HLC are in AIFC format, which, while high-quality, is large and not universally compatible with browsers. To address this:
+
+    -   **Format Conversion**: Files are converted to MP3 with a 128 kbps bitrate to reduce size while preserving good quality and ensuring compatibility with major browsers.
+
+    -   **Silence Trimming**: Silence at the beginning and end of each file is trimmed.
+
+    -   **Volume Normalization**: Volume levels are normalized to maintain consistent audio quality across files.
+
+-   **Batch Retrieval**: Instead of sending separate requests for each question’s audio, all files for a test (e.g., instructions, questions, answers) are fetched in a single request. The backend bundles these files into a zip archive, which is returned as binary data. This method minimizes backend requests and database queries while keeping the total file size manageable (under 5 MB) for fast loading.
+
+-   **Security**: The API never exposes file paths. Instead, it only requires the test ID in the request, returning files as binary data in the response, which helps maintain application security.
+
+### Audio Matching Model
+
+The application uses the pretrained model [facebook/wav2vec2-xlsr-53-espeak-cv-ft](#https://huggingface.co/facebook/wav2vec2-xlsr-53-espeak-cv-ft) to evaluate student responses. This model transcribes an audio file into phonemes using the International Phonetic Alphabet (IPA). The transcription of a student's answer is compared against the correct answer’s phoneme transcription, yielding a similarity score between 0 and 100. An answer is marked as correct if it achieves a similarity score of 60% or higher.
+
+To handle the resource-intensive nature of running this model—which can take several seconds per audio file—the audio analysis tasks are processed in the background. Celery, in combination with RabbitMQ as the message broker, manages this asynchronous task execution. Once the final question of an assessment is submitted, the task begins processing and evaluates each question in the assessment. This approach ensures efficient use of server resources and smoother user experience.
 
 ## Frontend Design
 
 Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/HalifaxLearning?node-id=0-1&node-type=canvas&t=GaKH62FGld4dErYt-0) for the design of the frontend screens.
+
+## Deployment
+
+The application is deployed on SMU server using Docker containers, organized as follows:
+
+• **Certbot**: Handles the SSL certificate generation and renewal for HTTPS, ensuring secure communication between the client and server.
+
+• **Backend**: Runs the Django application and Celery tasks, responsible for API requests, background audio analysis tasks, and database interactions.
+
+• **Frontend**: Hosts the React application, serving the user interface accessible to students, teachers, and admins.
+
+• **RabbitMQ**: Acts as the message broker, managing task queues for Celery to enable asynchronous processing of background tasks like audio analysis.
 
 ## Technologies and Tools
 
