@@ -94,7 +94,7 @@ Refer to the [Figma](https://www.figma.com/design/gVGbEBJzxMAQfHa3zLkMxu/Halifax
 
 ## Deployment
 
-The application is deployed on SMU server using Docker containers, organized as follows:
+The application is deployed on SMU server using Docker. The `docker-compose` file is put inside the `deployment` folder in the backend repository. The docker containers are organized as follows:
 
 • **Certbot**: Handles the SSL certificate generation and renewal for HTTPS, ensuring secure communication between the client and server.
 

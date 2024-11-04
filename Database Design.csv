@@ -83,7 +83,7 @@ Test Type,"Represents test types. A test consists of all questions in the DB of 
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Test,"Each record represents an actual test (e.g: synthesis, analysis,...) within an assessment taken by a student.",test_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+Test,"Each record represents an actual test (e.g: synthesis, analysis...) within an assessment taken by a student.",test_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_type_id,INT,,,N:1; TestType(test_type_id),Foreign key referencing test type
 ,,assessment_id,CHAR(32),,Yes,N:1; Assessment(assessment_id),Foreign key referencing the assessment as a test belongs to an assessment.
 ,,test_ordinal,INT,,,,"The position of the test within the assessement, starting from 1."
@@ -103,7 +103,7 @@ Assessment Type Test Type Mapping,"Maps the relationship between assessment type
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Test Question,Each record represent an actual question in a test within an assessment taken by a student.,test_question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+Test Question,Each record represents an actual question in a test within an assessment taken by a student.,test_question_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_id,CHAR(32),,,N:1; Test(test_id),Foreign key referencing test
 ,,question_id,INT,,,N:1; Question(question_id),Foreign key referencing question
 ,,question_ordinal,INT,,,,"The position of the question in the test, starting from 1."
@@ -117,7 +117,7 @@ Test Question,Each record represent an actual question in a test within an asses
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Auto Grading History,Each record repserents an evaluation of an machine learning model of a specific question in a test within an assessment taken by a student. An question can be evaluated multiple times. The answer's correctness is based on the last evalution.,auto_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+Auto Grading History,Each record represents an evaluation of a machine learning model of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times. The answer's correctness is based on the last evaluation.,auto_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_question_id,CHAR(32),,,N:1; TestQuestion(test_question_id),Foreign key referencing test question
 ,,model_name,VARCHAR(255),,Yes,,Name of the machine model. Might be useful when we use different machine learning models.
 ,,auto_evaluation,FLOAT,,,,"Confidence level that the answer is correct, range from 0 - 100. Higher value means higher confidence."
@@ -125,7 +125,7 @@ Auto Grading History,Each record repserents an evaluation of an machine learning
 ,,updated_at,DATETIME,CURRENT_TIMESTAMP,,,Timestamp for last update
 ,,deleted_at,DATETIME,,Yes,,Timestamp for deletion (soft delete)
 ,,,,,,,
-Teacher Grading History,Each record repserents an evaluation of a teacher of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times. The answer's correctness is based on the last evalution.,teacher_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
+Teacher Grading History,Each record represents an evaluation of a teacher of a specific question in a test within an assessment taken by a student. A question can be evaluated multiple times. The answer's correctness is based on the last evaluation.,teacher_grading_history_id,CHAR(32),,,,Primary Key (UUID without hyphens)
 ,,test_question_id,CHAR(32),,,N:1; Question(question_id),Foreign key referencing test question
 ,,teacher_account_id,CHAR(32),,,N:1; Account(account_id),Foreign key referencing teacher account
 ,,teacher_evaluation,BOOLEAN,,,,"Correctness of the answer: true (correct), false (incorrect)"
