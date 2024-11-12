@@ -167,8 +167,8 @@ INSERT INTO Account(account_id, account_role, first_name, last_name, email, hash
 
 INSERT INTO QuestionType (question_type_id, question_type_name, question_instruction_text, instruction_audio_filepath) VALUES
     (1, 'Synthesis', 'I''m going to say some sounds, put them together and tell me the word they would make. Some words will be real, but some will be fake. For example, if I said: "/b/ /oo/", you would say: "boo".', 'questions/synthesis/instruction_synthesis.mp3'),
-    (2, 'Analysis', 'I''m going to say some syllable, tell me the sound that you hear. Some words will be real, but some will be fake. For example, if I said "boot", you would say: "/b/ /oo/ /t/".', 'questions/analysis/instruction_analysis.mp3'),
-    (3, 'Listening', 'I''m going to say some syllable, tell me just the middle vowel sound that you hear. Some syllables will be real words, but some will be fake. For example, if I said: "boot", you would say: "/oo/".', 'questions/listening/instruction_listening.mp3'),
+    (2, 'Analysis', 'I''m going to say some syllables, tell me the sounds that you hear. Some words will be real, but some will be fake. For example, if I said "boot", you would say: "/b/ /oo/ /t/".', 'questions/analysis/instruction_analysis.mp3'),
+    (3, 'Listening', 'I''m going to say some syllables, tell me just the middle vowel sound that you hear. Some syllables will be real words, but some will be fake. For example, if I said: "boot", you would say: "/oo/".', 'questions/listening/instruction_listening.mp3'),
     (4, 'Single Phoneme Recognition', 'I''m going to show you some letters, tell me the sound they would make if you saw them in a word.', 'questions/single_phoneme_recognition/instruction_single_phoneme_recognition.mp3');
 
 INSERT INTO Question(question_id, question_type_id, question_text, question_audio_filepath, correct_answer_audio_filepath, correct_answer_text) VALUES
