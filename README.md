@@ -36,7 +36,7 @@ Frontend Repository
 -   [main branch](https://github.com/Halifax-Learning/phonetic-test-frontend)
 -   [dev branch](https://github.com/Halifax-Learning/phonetic-test-frontend/tree/dev): central branch to merge all the feature branches
 
-[Audio Repository](https://github.com/Halifax-Learning/audio): Repository for audio files (at the moment only contains mocked audio files)
+[Audio Repository](https://github.com/Halifax-Learning/audio): Repository for audio files of questions and correct answers
 
 [DB tables digram](https://app.diagrams.net/#G1PNbXyIDbN6pPMv5V23QvtA34P9FlOtFL#%7B%22pageId%22%3A%22xLGm1grYATWhj2qRU3a9%22%7D): Online version of **DB tables digram** of on draw.io
 
